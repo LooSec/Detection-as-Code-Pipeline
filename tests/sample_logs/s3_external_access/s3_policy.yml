@@ -1,0 +1,72 @@
+true_positive:
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T05:12:00Z"
+    eventSource: s3.amazonaws.com
+    eventName: PutBucketPolicy
+    awsRegion: us-east-1
+    sourceIPAddress: "198.51.100.88"
+    userAgent: "aws-cli/2.13.0"
+    userIdentity:
+      type: IAMUser
+      arn: "arn:aws:iam::123456789012:user/compromised-dev"
+      accountId: "123456789012"
+    requestParameters:
+      bucketName: "sensitive-data-bucket"
+      bucketPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource: "arn:aws:s3:::sensitive-data-bucket/*"
+
+  # True positive: granting access to external account
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T05:15:00Z"
+    eventSource: s3.amazonaws.com
+    eventName: PutBucketPolicy
+    awsRegion: us-east-1
+    sourceIPAddress: "198.51.100.88"
+    userAgent: "aws-cli/2.13.0"
+    userIdentity:
+      type: IAMUser
+      arn: "arn:aws:iam::123456789012:user/compromised-dev"
+    requestParameters:
+      bucketName: "internal-reports"
+      bucketPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: "arn:aws:iam::999888777666:root"
+            Action:
+              - "s3:GetObject"
+              - "s3:ListBucket"
+            Resource:
+              - "arn:aws:s3:::internal-reports"
+              - "arn:aws:s3:::internal-reports/*"
+
+benign:
+  # Benign: restricting access (deny policy)
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T10:00:00Z"
+    eventSource: s3.amazonaws.com
+    eventName: PutBucketPolicy
+    awsRegion: us-east-1
+    sourceIPAddress: "203.0.113.10"
+    userAgent: "cloudformation.amazonaws.com"
+    userIdentity:
+      type: AssumedRole
+      arn: "arn:aws:sts::123456789012:assumed-role/CloudFormationRole/stack"
+    requestParameters:
+      bucketName: "secure-bucket"
+      bucketPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Deny
+            Principal: "*"
+            Action: "s3:*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+            Resource: "arn:aws:s3:::secure-bucket/*"

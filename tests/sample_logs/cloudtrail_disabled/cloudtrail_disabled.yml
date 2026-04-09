@@ -1,0 +1,41 @@
+true_positive:
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T01:30:00Z"
+    eventSource: cloudtrail.amazonaws.com
+    eventName: StopLogging
+    awsRegion: us-east-1
+    sourceIPAddress: "198.51.100.99"
+    userAgent: "aws-cli/2.13.0"
+    userIdentity:
+      type: IAMUser
+      arn: "arn:aws:iam::123456789012:user/attacker"
+      accountId: "123456789012"
+    requestParameters:
+      name: "arn:aws:cloudtrail:us-east-1:123456789012:trail/main-trail"
+
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T01:31:00Z"
+    eventSource: cloudtrail.amazonaws.com
+    eventName: DeleteTrail
+    awsRegion: us-east-1
+    sourceIPAddress: "198.51.100.99"
+    userAgent: "aws-cli/2.13.0"
+    userIdentity:
+      type: IAMUser
+      arn: "arn:aws:iam::123456789012:user/attacker"
+    requestParameters:
+      name: "arn:aws:cloudtrail:us-east-1:123456789012:trail/main-trail"
+
+benign:
+  # Benign: StopLogging that failed due to access denied
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T10:00:00Z"
+    eventSource: cloudtrail.amazonaws.com
+    eventName: StopLogging
+    awsRegion: us-east-1
+    sourceIPAddress: "198.51.100.50"
+    userIdentity:
+      type: IAMUser
+      arn: "arn:aws:iam::123456789012:user/limited-user"
+    errorCode: "AccessDeniedException"
+    errorMessage: "User is not authorized to perform cloudtrail:StopLogging"

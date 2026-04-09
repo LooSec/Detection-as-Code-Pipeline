@@ -1,0 +1,54 @@
+# True positive: successful console login without MFA
+true_positive:
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T14:23:01Z"
+    eventSource: signin.amazonaws.com
+    eventName: ConsoleLogin
+    awsRegion: us-east-1
+    sourceIPAddress: "198.51.100.42"
+    userAgent: "Mozilla/5.0"
+    userIdentity:
+      type: IAMUser
+      arn: "arn:aws:iam::123456789012:user/backdoor-user"
+      accountId: "123456789012"
+      userName: "backdoor-user"
+    responseElements:
+      ConsoleLogin: "Success"
+    additionalEventData:
+      MFAUsed: "No"
+      LoginTo: "https://console.aws.amazon.com/console/home"
+
+# Benign: successful console login WITH MFA
+benign:
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T09:00:00Z"
+    eventSource: signin.amazonaws.com
+    eventName: ConsoleLogin
+    awsRegion: us-east-1
+    sourceIPAddress: "203.0.113.10"
+    userAgent: "Mozilla/5.0"
+    userIdentity:
+      type: IAMUser
+      arn: "arn:aws:iam::123456789012:user/legit-admin"
+      accountId: "123456789012"
+      userName: "legit-admin"
+    responseElements:
+      ConsoleLogin: "Success"
+    additionalEventData:
+      MFAUsed: "Yes"
+      LoginTo: "https://console.aws.amazon.com/console/home"
+
+  # Benign: failed login attempt (not a successful compromise)
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T14:25:00Z"
+    eventSource: signin.amazonaws.com
+    eventName: ConsoleLogin
+    awsRegion: us-east-1
+    sourceIPAddress: "198.51.100.42"
+    userIdentity:
+      type: IAMUser
+      arn: "arn:aws:iam::123456789012:user/some-user"
+    responseElements:
+      ConsoleLogin: "Failure"
+    additionalEventData:
+      MFAUsed: "No"

@@ -1,0 +1,36 @@
+true_positive:
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T02:45:00Z"
+    eventSource: sts.amazonaws.com
+    eventName: AssumeRole
+    awsRegion: us-east-1
+    sourceIPAddress: "198.51.100.77"
+    userAgent: "aws-cli/2.13.0"
+    userIdentity:
+      type: IAMUser
+      arn: "arn:aws:iam::123456789012:user/junior-dev"
+      accountId: "123456789012"
+    requestParameters:
+      roleArn: "arn:aws:iam::123456789012:role/FullAdminRole"
+      roleSessionName: "privesc-session"
+    resources:
+      - ARN: "arn:aws:iam::123456789012:role/FullAdminRole"
+        accountId: "123456789012"
+
+benign:
+  # Benign: AWS service assuming a service-linked role
+  - eventVersion: "1.08"
+    eventTime: "2024-11-15T10:00:00Z"
+    eventSource: sts.amazonaws.com
+    eventName: AssumeRole
+    awsRegion: us-east-1
+    sourceIPAddress: "lambda.amazonaws.com"
+    userIdentity:
+      type: AWSService
+      invokedBy: "lambda.amazonaws.com"
+    requestParameters:
+      roleArn: "arn:aws:iam::123456789012:role/AWSServiceRoleForLambda"
+      roleSessionName: "lambda-exec"
+    resources:
+      - ARN: "arn:aws:iam::123456789012:role/AWSServiceRoleForLambda"
+        accountId: "123456789012"
