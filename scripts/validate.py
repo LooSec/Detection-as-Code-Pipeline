@@ -19,17 +19,17 @@ def load_schema() -> dict:
         return json.load(f)
 
 
-def validate_detection(detection: dict, schema: dict) -> list[str]:
+def validate_detection(detection: dict, schema: dict, rule_path: Path) -> list[str]:
     errors = []
     validator = jsonschema.Draft7Validator(schema)
     for error in validator.iter_errors(detection):
         path = " -> ".join(str(p) for p in error.absolute_path) or "(root)"
         errors.append(f"  Schema: {path}: {error.message}")
 
-    det_id = detection.get("id", "UNKNOWN")
-    sample_dir = TESTS_DIR / det_id.lower().replace("-", "_")
+    # sample log dir matches the rule filename (without extension)
+    sample_dir = TESTS_DIR / rule_path.stem
     if not sample_dir.exists():
-        errors.append(f"  Missing sample logs: tests/sample_logs/{det_id.lower().replace('-', '_')}/")
+        errors.append(f"  Missing sample logs: tests/sample_logs/{rule_path.stem}/")
 
     return errors
 
@@ -68,7 +68,7 @@ def main() -> int:
             total_errors += 1
             continue
 
-        errors = validate_detection(det, schema)
+        errors = validate_detection(det, schema, filepath)
         all_dets.append((filepath, det))
 
         if errors:
