@@ -1,0 +1,31 @@
+id: DET-AWS-004
+name: CloudTrail Logging Disabled
+description: >
+  Fires on StopLogging or DeleteTrail calls that succeed.
+severity: critical
+mitre:
+  tactic: defense-evasion
+  technique: T1562
+  subtechnique: T1562.001
+data_source: cloudtrail
+logic:
+  event_name: StopLogging
+  conditions:
+    - field: eventName
+      operator: in
+      value:
+        - "StopLogging"
+        - "DeleteTrail"
+    - field: errorCode
+      operator: not_exists
+      value: true
+false_positive_guidance: >
+  Trail consolidation (killing old trails when moving to org-level)
+  is the main legit scenario. Should be in change management and
+  you should see a new trail created in the same session.
+references:
+  - https://attack.mitre.org/techniques/T1562/001/
+response_actions:
+  - Verify CloudTrail is still running in all regions RIGHT NOW
+  - Re-enable if it was killed without approval
+  - Treat the actor's entire session as hostile until cleared

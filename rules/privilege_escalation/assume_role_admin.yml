@@ -1,0 +1,33 @@
+id: DET-AWS-003
+name: AssumeRole Into Admin Role
+description: 
+  Looks for STS AssumeRole into roles with "Admin" in the name from
+  non-service principals. Common privesc path.
+severity: high
+mitre:
+  tactic: privilege-escalation
+  technique: T1548
+data_source: cloudtrail
+logic:
+  event_name: AssumeRole
+  conditions:
+    - field: requestParameters.roleArn
+      operator: contains
+      value: "Admin"
+    - field: resources.0.ARN
+      operator: not_contains
+      value: "AWSServiceRole"
+    - field: userIdentity.type
+      operator: neq
+      value: "AWSService"
+false_positive_guidance: >
+  Cross-account assumes for CI/CD or org management will hit this.
+  You'll want an allowlist of known principal-to-role pairs.
+  SSO/Identity Center role assumes are usually fine.
+references:
+  - https://attack.mitre.org/techniques/T1548/
+  - https://rhinosecuritylabs.com/aws/aws-privilege-escalation-methods-mitigation/
+response_actions:
+  - Check who/what assumed the role and from where
+  - Look at API calls made in the assumed session
+  - Revoke active sessions if the source identity is compromised

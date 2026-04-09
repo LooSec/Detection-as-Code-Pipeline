@@ -1,0 +1,33 @@
+id: DET-AWS-001
+name: Console Login Without MFA
+description: >
+  Flags successful console logins where MFA wasn't used. In any
+  environment where MFA is enforced this shouldn't happen, so it's
+  either cred compromise or a policy gap.
+severity: high
+mitre:
+  tactic: initial-access
+  technique: T1078
+  subtechnique: T1078.004
+data_source: cloudtrail
+logic:
+  event_name: ConsoleLogin
+  conditions:
+    - field: responseElements.ConsoleLogin
+      operator: eq
+      value: "Success"
+    - field: additionalEventData.MFAUsed
+      operator: eq
+      value: "No"
+false_positive_guidance: >
+  SSO/federated logins sometimes show MFA as "No" at the AWS layer
+  even when MFA happened at the IdP. Check your federation setup
+  before chasing these. Root account during initial setup will also
+  trip this.
+references:
+  - https://attack.mitre.org/techniques/T1078/004/
+  - https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-event-reference-record-contents.html
+response_actions:
+  - Pull userIdentity.arn and check sourceIPAddress against known egress
+  - Look at what they did after login
+  - Kill the session and rotate creds if it's not legit

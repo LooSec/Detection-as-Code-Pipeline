@@ -1,0 +1,30 @@
+id: DET-AWS-002
+name: IAM User With Admin Policy Attached
+description: >
+  Catches AttachUserPolicy calls where AdministratorAccess gets
+  attached. If your org provisions users through an IdP or IaC,
+  someone manually giving a user full admin is a red flag.
+severity: critical
+mitre:
+  tactic: persistence
+  technique: T1098
+data_source: cloudtrail
+logic:
+  event_name: AttachUserPolicy
+  conditions:
+    - field: requestParameters.policyArn
+      operator: contains
+      value: "AdministratorAccess"
+    - field: responseElements
+      operator: exists
+      value: true
+false_positive_guidance: >
+  Terraform/CloudFormation creating users with admin will trigger this.
+  Check userAgent — automation usually shows up as aws-sdk or
+  cloudformation.amazonaws.com.
+references:
+  - https://attack.mitre.org/techniques/T1098/
+response_actions:
+  - Check who did it and whether there's a change ticket
+  - See if the new user has logged in or created access keys yet
+  - Detach the policy and disable the user if it wasn't approved

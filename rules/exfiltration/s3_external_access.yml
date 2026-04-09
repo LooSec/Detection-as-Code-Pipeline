@@ -1,0 +1,31 @@
+id: DET-AWS-006
+name: S3 Bucket Policy Opened to External Access
+description: >
+  Fires on PutBucketPolicy where the new policy grants access to
+  Principal "*" or an external account. Potential evidence of exfil.
+severity: critical
+mitre:
+  tactic: exfiltration
+  technique: T1537
+data_source: cloudtrail
+logic:
+  event_name: PutBucketPolicy
+  conditions:
+    - field: eventName
+      operator: eq
+      value: "PutBucketPolicy"
+    - field: requestParameters.bucketPolicy
+      operator: contains
+      value: '"Effect": "Allow"'
+    - field: requestParameters.bucketPolicy
+      operator: regex
+      value: '("Principal":\s*"\*"|"AWS":\s*"arn:aws:iam::\d{12}:root")'
+false_positive_guidance: >
+  Cross-account sharing for data lakes, CloudFront OAC, S3 replication.
+  Keep a list of approved external account IDs. 
+references:
+  - https://attack.mitre.org/techniques/T1537/
+response_actions:
+  - Look at the new policy and figure out who got access
+  - Check S3 access logs for downloads from the external account
+  - Revert the policy and enable Block Public Access if needed
