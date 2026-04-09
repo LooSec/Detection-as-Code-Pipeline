@@ -1,4 +1,4 @@
-id: DET-AWS-006
+id: AWS-006
 name: S3 Bucket Policy Opened to External Access
 description: >
   Fires on PutBucketPolicy where the new policy grants access to

@@ -1,4 +1,4 @@
-id: DET-AWS-003
+id: AWS-003
 name: AssumeRole Into Admin Role
 description: 
   Looks for STS AssumeRole into roles with "Admin" in the name from

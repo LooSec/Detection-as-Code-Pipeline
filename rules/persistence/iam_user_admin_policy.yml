@@ -1,4 +1,4 @@
-id: DET-AWS-002
+id: AWS-002
 name: IAM User With Admin Policy Attached
 description: >
   Catches AttachUserPolicy calls where AdministratorAccess gets

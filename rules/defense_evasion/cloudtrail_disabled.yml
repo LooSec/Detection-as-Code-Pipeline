@@ -1,4 +1,4 @@
-id: DET-AWS-004
+id: AWS-004
 name: CloudTrail Logging Disabled
 description: >
   Fires on StopLogging or DeleteTrail calls that succeed.

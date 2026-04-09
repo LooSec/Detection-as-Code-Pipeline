@@ -1,4 +1,4 @@
-id: DET-AWS-001
+id: AWS-001
 name: Console Login Without MFA
 description: >
   Flags successful console logins where MFA wasn't used. In any
