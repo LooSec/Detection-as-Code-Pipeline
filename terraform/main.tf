@@ -79,6 +79,16 @@ module "cloudtrail_pipeline" {
   elastic_password = var.elastic_password
 }
 
+module "honeypot" {
+  source           = "./modules/honeypot"
+  vpc_id           = module.network.vpc_id
+  aws_region       = var.aws_region
+  igw_id           = module.network.igw_id
+  key_name         = var.key_name
+  elastic_host     = module.elastic.private_ip
+  elastic_password = var.elastic_password
+}
+
 output "kibana_url" {
   value = "https://${module.elastic.public_ip}:5601"
 }
@@ -97,4 +107,8 @@ output "attack_host_ip" {
 
 output "cloudtrail_bucket" {
   value = module.cloudtrail_pipeline.trail_bucket
+}
+
+output "honeypot_ip" {
+  value = module.honeypot.public_ip
 }

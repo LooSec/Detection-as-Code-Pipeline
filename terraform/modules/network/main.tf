@@ -97,6 +97,7 @@ resource "aws_security_group" "attack_host" {
 }
 
 output "vpc_id"           { value = aws_vpc.lab.id }
+output "igw_id"           { value = aws_internet_gateway.igw.id }
 output "public_subnet_id" { value = aws_subnet.public.id }
 output "elastic_sg_id"    { value = aws_security_group.elastic.id }
 output "attack_sg_id"     { value = aws_security_group.attack_host.id }
