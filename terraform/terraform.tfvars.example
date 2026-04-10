@@ -1,0 +1,13 @@
+aws_region = "us-east-1"
+
+# your public IP — find it at https://checkip.amazonaws.com
+my_ip = "YOUR_IP/32"
+
+# add employer IPs here for kibana access
+employer_cidrs = []
+
+# create a key pair in AWS console first
+key_name = "detection-lab-key"
+
+elastic_password         = "CHANGE_ME"
+kibana_readonly_password = "CHANGE_ME"
